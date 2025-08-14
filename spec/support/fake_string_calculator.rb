@@ -12,7 +12,17 @@ class StringCalculator
       numbers = parts[1]
     end
 
-    numbers.split(/#{delimiter}/).map(&:to_i).sum
+    nums = numbers.split(/#{delimiter}/).map(&:to_i)
+
+    check_for_negatives(nums)
+    nums.sum
+  end
+
+  def self.check_for_negatives(nums)
+    negatives = nums.select { |n| n < 0 }
+    unless negatives.empty?
+      raise "negatives not allowed: #{negatives.join(', ')}"
+    end
   end
 end
 
