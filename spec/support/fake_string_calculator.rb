@@ -3,16 +3,26 @@ class StringCalculator
     return 0 if numbers.empty?
     # numbers.split(/,|\n/).map(&:to_i).sum
 
-    delimiter = /,|\n/  # default delimiters
+    delimiters = [",", "\n", "|"]  # defaults
 
     if numbers.start_with?("//")
-      parts = numbers.split("\n", 2)
-      custom_delimiter = parts[0][2..]
-      delimiter = Regexp.escape(custom_delimiter)
-      numbers = parts[1]
+      header, numbers = numbers.split("\n", 2)
+
+      if header.include?("[")
+        # //[delim][delim2]... supports long & multiple delimiters
+        custom = header.scan(/\[(.*?)\]/).flatten
+        delimiters.concat(custom)
+      else
+        # //;  (single-char)
+        delimiters << header[2]
+      end
     end
 
-    nums = numbers.split(/#{delimiter}/).map(&:to_i)
+    # IMPORTANT: don't double-escape; let Regexp.union escape strings safely
+    split_pattern = Regexp.union(delimiters)
+
+    parts = numbers.split(split_pattern)
+    nums  = parts.map!(&:to_i)
 
     check_for_negatives(nums)
 
