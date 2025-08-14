@@ -15,6 +15,8 @@ class StringCalculator
     nums = numbers.split(/#{delimiter}/).map(&:to_i)
 
     check_for_negatives(nums)
+
+    nums.reject! { |n| n > 1000 } # ignore > 1000
     nums.sum
   end
 
